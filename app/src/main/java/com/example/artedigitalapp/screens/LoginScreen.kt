@@ -1,29 +1,67 @@
 package com.example.artedigitalapp.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Pantalla de Login")
+fun LoginScreen(
+    onLoginClick: (email: String, password: String) -> Unit,
+    onNavigateToRegistro: () -> Unit
+) {
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
-        Button(onClick = {
-            navController.navigate("registro")
-        }) {
-            Text(text = "Ir a Registro")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Iniciar Sesión", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(20.dp))
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Correo") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Contraseña") },
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = { onLoginClick(email, password) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("Iniciar Sesión")
         }
 
-        Button(onClick = {
-            navController.navigate("home")
-        }) {
-            Text(text = "Ir a Home")
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TextButton(
+            onClick = onNavigateToRegistro,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("¿No tienes cuenta? Regístrate")
         }
     }
 }
