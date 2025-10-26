@@ -7,7 +7,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
+// --- Todas las pantallas importadas desde el mismo package ---
+import com.example.artedigitalapp.screens.HomePrincipalScreen
+import com.example.artedigitalapp.screens.LoginScreen
+import com.example.artedigitalapp.screens.RegistroScreen
+import com.example.artedigitalapp.screens.HomeScreen
+
 object Screens {
+    const val HomePrincipal = "home_principal"
     const val Login = "login"
     const val Registro = "registro"
     const val Home = "home"
@@ -18,8 +25,17 @@ fun AppNavGraph() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    NavHost(navController = navController, startDestination = Screens.Login) {
+    NavHost(navController = navController, startDestination = Screens.HomePrincipal) {
 
+        // 🏠 Pantalla de bienvenida / portada
+        composable(Screens.HomePrincipal) {
+            HomePrincipalScreen(
+                onNavigateToLogin = { navController.navigate(Screens.Login) },
+                onNavigateToRegistro = { navController.navigate(Screens.Registro) }
+            )
+        }
+
+        // 🔑 Pantalla de inicio de sesión
         composable(Screens.Login) {
             LoginScreen(
                 onLoginClick = { email, password ->
@@ -34,6 +50,7 @@ fun AppNavGraph() {
             )
         }
 
+        // 📝 Pantalla de registro
         composable(Screens.Registro) {
             RegistroScreen(
                 onRegisterClick = { nombre, email, password ->
@@ -50,10 +67,11 @@ fun AppNavGraph() {
             )
         }
 
+        // 🖼 Pantalla Home (después de iniciar sesión)
         composable(Screens.Home) {
             HomeScreen(
                 onLogoutClick = {
-                    navController.navigate(Screens.Login) {
+                    navController.navigate(Screens.HomePrincipal) {
                         popUpTo(Screens.Home) { inclusive = true }
                     }
                 }
