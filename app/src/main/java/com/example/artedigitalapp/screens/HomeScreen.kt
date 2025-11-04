@@ -8,7 +8,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun HomeScreen(
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onVerServiciosClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -17,18 +18,31 @@ fun HomeScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Pantalla Home",
+            text = "Bienvenido al Home",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
+        // Botón para navegar a Servicios
+        Button(
+            onClick = onVerServiciosClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+        ) {
+            Text("Ver servicios")
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // Botón para cerrar sesión
         Button(
             onClick = onLogoutClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text(text = "Cerrar sesión")
+            Text("Cerrar sesión")
         }
     }
 }

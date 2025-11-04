@@ -1,85 +1,95 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 package com.example.artedigitalapp.screens
 
-
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.artedigitalapp.R
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.navigation.NavController
+import com.example.artedigitalapp.repository.ServicioRepository
+import com.example.artedigitalapp.repository.CarritoRepository
 
 @Composable
 fun HomePrincipalScreen(
+    navController: NavController,
     onNavigateToLogin: () -> Unit,
     onNavigateToRegistro: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Puedes poner tu logo si tienes un drawable
-        // Image(painter = painterResource(id = R.drawable.logo), contentDescription = "Logo", modifier = Modifier.size(120.dp))
+    val servicios = ServicioRepository.obtenerServicios()
+    var carritoCount by remember { mutableStateOf(CarritoRepository.obtenerCarrito().size) }
 
-        Text(
-            text = "🎨 Arte Digital",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = "Servicios de arte .",
-            fontSize = 16.sp,
-            lineHeight = 22.sp,
-            modifier = Modifier.padding(horizontal = 12.dp),
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Button(
-            onClick = onNavigateToLogin,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-        ) {
-            Text("Iniciar Sesión", fontSize = 18.sp)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Servicios") },
+                actions = {
+                    // Botón para ir al carrito
+                    TextButton(onClick = { navController.navigate("carrito") }) {
+                        Text("Carrito ($carritoCount)")
+                    }
+                    TextButton(onClick = onNavigateToLogin) { Text("Iniciar sesión") }
+                    TextButton(onClick = onNavigateToRegistro) { Text("Registrarse") }
+                }
+            )
         }
+    ) { padding ->
+        if (servicios.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                Text("No hay servicios disponibles")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(servicios) { servicio ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                // Navegar al detalle del servicio (sin guardar lambdas)
+                                navController.navigate("detalle/${servicio.id}")
+                            },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Image(
+                                painter = painterResource(id = servicio.imagenRes),
+                                contentDescription = servicio.titulo,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp),
+                                contentScale = ContentScale.Crop
+                            )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        OutlinedButton(
-            onClick = onNavigateToRegistro,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp)
-        ) {
-            Text("Crear Cuenta", fontSize = 18.sp)
+                            Spacer(Modifier.height(8.dp))
+                            Text(servicio.titulo, style = MaterialTheme.typography.titleLarge)
+                            Text(servicio.descripcion)
+                            Spacer(Modifier.height(4.dp))
+                            Text("Precio: \$${servicio.precio}", style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                "Disponible: ${if (servicio.disponible) "Sí" else "No"}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+            }
         }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // Sección de servicios ofrecidos (solo visual)
-        Text(
-            text = "Servicios que ofrecemos:",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Medium
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text("• Dibujo digital personalizado")
-        Text("• Ilustración y pintura digital")
-        Text("• Diseño de personajes")
-        Text("• Asesorías y clases online")
     }
 }
