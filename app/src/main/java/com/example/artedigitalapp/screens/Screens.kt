@@ -22,4 +22,7 @@ sealed class Screens(val route: String) {
     object ServicioDetail : Screens("servicio_detail_screen") {
         fun createRoute(id: Long) = "$route/$id"
     }
+
+    object UsuariosAdmin : Screens("usuarios_admin")
+
 }

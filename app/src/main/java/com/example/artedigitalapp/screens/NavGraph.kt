@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.artedigitalapp.navigation.Screens
 import com.example.artedigitalapp.viewmodel.CarritoViewModel
+import com.example.artedigitalapp.screens.admin.UsuariosAdminScreen // ← IMPORTANTE
 
 @Composable
 fun AppNavGraph() {
@@ -63,9 +64,9 @@ fun AppNavGraph() {
             CrearServicioScreen(navController = navController)
         }
 
-        // 🎯 NUEVO: Mis Compras
+        // 🎯 Mis Compras
         composable(Screens.MisCompras.route) {
-            MisComprasScreen(navController = navController) // <--- DESTINO AGREGADO
+            MisComprasScreen(navController = navController)
         }
 
         // Editar Servicio
@@ -80,7 +81,7 @@ fun AppNavGraph() {
             )
         }
 
-        // Servicio Detail (con CarritoViewModel)
+        // Servicio Detail
         composable(
             route = "${Screens.ServicioDetail.route}/{id}",
             arguments = listOf(navArgument("id") { type = NavType.LongType })
@@ -103,6 +104,11 @@ fun AppNavGraph() {
                 carritoViewModel = carritoViewModel,
                 onVolverClick = { navController.popBackStack() }
             )
+        }
+
+        // 🚀 NUEVO: Usuarios Admin
+        composable(Screens.UsuariosAdmin.route) {
+            UsuariosAdminScreen(navController = navController)
         }
     }
 }

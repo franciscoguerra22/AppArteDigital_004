@@ -110,9 +110,6 @@ fun CarritoScreen(
                     }
                 }
 
-                // -------------------------------------------------------------
-                // BLOQUE DEL BOTÓN COMPRAR TODO (Simplificado)
-                // -------------------------------------------------------------
                 item {
                     Spacer(Modifier.height(16.dp))
                     Button(
@@ -122,26 +119,19 @@ fun CarritoScreen(
                                 Toast.makeText(context, "Error: Debes iniciar sesión para comprar.", Toast.LENGTH_LONG).show()
                                 return@Button
                             }
-
-                            // LLAMADA SIMPLIFICADA:
-                            // Usamos la función del ViewModel que ya hace la llamada masiva
-                            // y maneja los códigos 201/400.
                             carritoViewModel.realizarCompra(context) {
-                                // Esta lambda se ejecuta SI y SOLO SI la compra fue un éxito total (código 201)
-                                // Usamos esto para navegar de vuelta o refrescar la pantalla principal si es necesario.
-                                // onVolverClick() // O alguna otra navegación
-                                // El ViewModel ya vació el carrito en caso de éxito total.
+
                             }
 
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(50.dp), // Aumentar altura para mejor toque
+                            .height(50.dp), //
                         enabled = carrito.isNotEmpty()
                     ) {
                         Text("Comprar Todo (${carrito.size} items)")
                     }
-                    Spacer(Modifier.height(32.dp)) // Espaciador al final
+                    Spacer(Modifier.height(32.dp))
                 }
             }
         }

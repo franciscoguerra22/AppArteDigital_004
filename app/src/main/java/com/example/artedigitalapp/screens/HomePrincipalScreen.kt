@@ -17,9 +17,6 @@ import coil.compose.rememberAsyncImagePainter
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.artedigitalapp.navigation.Screens
-import com.example.artedigitalapp.models.Servicio
-// ❌ ELIMINADA: Ya no se usa directamente
-// import com.example.artedigitalapp.repository.ServicioRepository
 import com.example.artedigitalapp.repository.UserSession
 import com.example.artedigitalapp.repository.SessionManager
 import com.example.artedigitalapp.screens.components.CarruselImagenes
@@ -131,6 +128,16 @@ fun HomePrincipalScreen(
                                         }
                                     )
                                 }
+                                if (UserSession.role == "ROLE_ADMIN") {
+                                    DropdownMenuItem(
+                                        text = { Text("Usuarios") },
+                                        onClick = {
+                                            menuExpanded = false
+                                            navController.navigate(Screens.UsuariosAdmin.route)
+                                        }
+                                    )
+                                }
+
                                 DropdownMenuItem(
                                     text = { Text("Cerrar sesión") },
                                     onClick = {
