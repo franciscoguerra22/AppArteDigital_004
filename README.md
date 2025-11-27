@@ -125,4 +125,7 @@ Run > Run app
 
 🎉 7. Conclusión
 
-ARE DIGITAL es una plataforma completa que permite gestionar servicios artísticos digitales mediante un sistema seguro basado en microservicios, roles, y compras integradas. Desarrollado con Jetpack Compose, Spring Boot, PostgreSQL, Render, y API externa, ofrece una experiencia robusta tanto para usuarios como administradores.
+ARTE DIGITAL es una plataforma completa que permite gestionar servicios artísticos digitales mediante un sistema seguro basado en microservicios, roles, y compras integradas. Desarrollado con Jetpack Compose, Spring Boot, PostgreSQL, Render, y API externa, ofrece una experiencia robusta tanto para usuarios como administradores.
+
+![Captura APK y JKS](capturas/captura_APK_JKS.png)
+
