@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    // Se eliminó: id("de.mannodermaus.android-junit5")
 }
 
 android {
@@ -29,12 +30,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 
     buildFeatures {
@@ -44,6 +45,8 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.0"
     }
+
+    // Se eliminó el bloque testOptions
 }
 
 dependencies {
@@ -51,6 +54,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 
     // --- Jetpack Compose ---
     implementation(platform("androidx.compose:compose-bom:2025.09.00"))
@@ -66,18 +70,31 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    // --- OkHttp Logging (opcional para debugging) ---
+    // --- OkHttp Logging ---
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     // --- Kotlin Coroutines ---
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
-    // --- Coil para imágenes (opcional) ---
+    // --- Coil para imágenes ---
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    // --- Testing ---
+    // --- Carrusel (Accompanist Pager) ---
+    implementation("androidx.compose.foundation:foundation:1.6.0")
+    implementation("com.google.accompanist:accompanist-pager:0.32.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.32.0")
+    implementation(libs.androidx.compose.foundation)
+
+    // ===============================================
+    // --- TESTING UNITARIO (REVERTIDO) ---
+    // ===============================================
+
+    // Base de testing por defecto
     testImplementation("junit:junit:4.13.2")
+    // Se eliminaron todas las dependencias de Kotest, MockK y Coroutines Test.
+
+    // --- Android/Compose UI Testing ---
     androidTestImplementation("androidx.test.ext:junit:1.1.6")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.2")
     androidTestImplementation(platform("androidx.compose:compose-bom:2025.09.00"))

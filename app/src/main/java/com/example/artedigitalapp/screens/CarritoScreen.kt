@@ -1,5 +1,9 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.artedigitalapp.screens
 
+import android.widget.Toast
+import coil.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,17 +13,27 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.artedigitalapp.repository.CarritoRepository
 import com.example.artedigitalapp.models.Servicio
+import com.example.artedigitalapp.repository.UserSession // Mantener UserSession para verificar autenticación
+import com.example.artedigitalapp.viewmodel.CarritoViewModel
+// Importaciones de red y repositorio innecesarias aquí porque usamos el ViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CarritoScreen(
+    carritoViewModel: CarritoViewModel,
     onVolverClick: () -> Unit
 ) {
-    var carrito by remember { mutableStateOf(CarritoRepository.obtenerCarrito()) }
+    val context = LocalContext.current
+    // Eliminamos 'scope' y 'compraRepository' porque la lógica de red está en el ViewModel
+
+    LaunchedEffect(true) {
+        carritoViewModel.cargarCarrito(context)
+    }
+
+    val carrito by carritoViewModel.carrito.collectAsState()
     var mostrarDialogo by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -41,6 +55,7 @@ fun CarritoScreen(
             )
         }
     ) { padding ->
+
         if (carrito.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -55,7 +70,7 @@ fun CarritoScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(16.dp),
+                    .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(carrito) { servicio ->
@@ -64,58 +79,88 @@ fun CarritoScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
+
                             Image(
-                                painter = painterResource(id = servicio.imagenRes),
-                                contentDescription = servicio.titulo,
+                                painter = rememberAsyncImagePainter(servicio.imagenUrl),
+                                contentDescription = servicio.nombre,
                                 modifier = Modifier
+                                    // CORRECCIÓN: Aumentar la altura de la imagen para que se vea
                                     .fillMaxWidth()
-                                    .height(180.dp),
+                                    .height(200.dp),
                                 contentScale = ContentScale.Crop
                             )
+
                             Spacer(Modifier.height(8.dp))
-                            Text(servicio.titulo, style = MaterialTheme.typography.titleLarge)
+                            Text(servicio.nombre, style = MaterialTheme.typography.titleLarge)
                             Text(servicio.descripcion)
                             Spacer(Modifier.height(4.dp))
                             Text("Precio: \$${servicio.precio}", style = MaterialTheme.typography.bodyLarge)
 
                             Spacer(Modifier.height(8.dp))
+
                             Button(
-                                onClick = {
-                                    CarritoRepository.eliminarDelCarrito(servicio)
-                                    carrito = CarritoRepository.obtenerCarrito()
-                                },
+                                onClick = { carritoViewModel.borrarItem(context, servicio) },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(45.dp)
+                                    .height(35.dp)
                             ) {
                                 Text("Eliminar del carrito")
                             }
                         }
                     }
                 }
+
+                // -------------------------------------------------------------
+                // BLOQUE DEL BOTÓN COMPRAR TODO (Simplificado)
+                // -------------------------------------------------------------
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            val usuarioAutenticado = UserSession.token != null
+                            if (!usuarioAutenticado) {
+                                Toast.makeText(context, "Error: Debes iniciar sesión para comprar.", Toast.LENGTH_LONG).show()
+                                return@Button
+                            }
+
+                            // LLAMADA SIMPLIFICADA:
+                            // Usamos la función del ViewModel que ya hace la llamada masiva
+                            // y maneja los códigos 201/400.
+                            carritoViewModel.realizarCompra(context) {
+                                // Esta lambda se ejecuta SI y SOLO SI la compra fue un éxito total (código 201)
+                                // Usamos esto para navegar de vuelta o refrescar la pantalla principal si es necesario.
+                                // onVolverClick() // O alguna otra navegación
+                                // El ViewModel ya vació el carrito en caso de éxito total.
+                            }
+
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp), // Aumentar altura para mejor toque
+                        enabled = carrito.isNotEmpty()
+                    ) {
+                        Text("Comprar Todo (${carrito.size} items)")
+                    }
+                    Spacer(Modifier.height(32.dp)) // Espaciador al final
+                }
             }
         }
     }
 
-    // Diálogo de confirmación para vaciar el carrito
+    // AlertDialog para vaciar el carrito
     if (mostrarDialogo) {
         AlertDialog(
             onDismissRequest = { mostrarDialogo = false },
             confirmButton = {
                 TextButton(
                     onClick = {
-                        CarritoRepository.vaciarCarrito()
-                        carrito = CarritoRepository.obtenerCarrito()
+                        carritoViewModel.borrarCarrito(context)
                         mostrarDialogo = false
                     }
-                ) {
-                    Text("Vaciar todo")
-                }
+                ) { Text("Vaciar todo") }
             },
             dismissButton = {
-                TextButton(onClick = { mostrarDialogo = false }) {
-                    Text("Cancelar")
-                }
+                TextButton(onClick = { mostrarDialogo = false }) { Text("Cancelar") }
             },
             title = { Text("Vaciar carrito") },
             text = { Text("¿Seguro que deseas eliminar todos los servicios del carrito?") }

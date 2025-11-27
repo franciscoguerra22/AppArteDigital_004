@@ -1,11 +1,12 @@
 package com.example.artedigitalapp.models
-import androidx.annotation.DrawableRes
 
 data class Servicio(
-    val id: Int,
-    val titulo: String,
+    val id: Long? = null,          // Coincide con el backend
+    val nombre: String,            // Nombre del servicio
     val descripcion: String,
-    val precio: Int,
-    @DrawableRes val imagenRes: Int, // ID del drawable
-    val disponible: Boolean = true
+    val precio: Double,
+    val activo: Boolean = true,    // Disponible o no
+    val imagenUrl: String? = null  // URL de imagen desde backend
 )
+
+

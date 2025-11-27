@@ -40,14 +40,11 @@ class AuthViewModel : ViewModel() {
         nombreCompleto: String,
         email: String,
         password: String,
-        telefono: String,
-        region: String,
-        comuna: String
     ) {
         viewModelScope.launch {
             try {
                 val response = repository.register(
-                    RegistroRequest(nombreCompleto, email, password, telefono, region, comuna)
+                    RegistroRequest(nombreCompleto, email, password)
                 )
                 _authResponse.value = response
                 _errorMessage.value = null

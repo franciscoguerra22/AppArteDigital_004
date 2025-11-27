@@ -1,48 +1,77 @@
 package com.example.artedigitalapp.repository
 
 import com.example.artedigitalapp.models.Servicio
-import com.example.artedigitalapp.R
+import com.example.artedigitalapp.network.ApiService
+import retrofit2.HttpException
+import java.lang.IllegalArgumentException
 
-object ServicioRepository {
+// Ahora la dependencia 'api' se inyecta por el constructor.
+class ServicioRepository(private val api: ApiService) {
 
-    // Simula datos locales (más adelante se conectará al backend)
-    private val servicios = listOf(
-        Servicio(
-            id = 1,
-            titulo = "Retrato Digital",
-            descripcion = "Ilustración estilo retrato en alta resolución.",
-            precio = 25000,
-            imagenRes = R.drawable.servicio1
-        ),
-        Servicio(
-            id = 2,
-            titulo = "Ilustración Personalizada",
-            descripcion = "Diseño único según tu idea o referencia.",
-            precio = 35000,
-            imagenRes = R.drawable.servicio2
-        ),
-        Servicio(
-            id = 3,
-            titulo = "Banner para Redes Sociales",
-            descripcion = "Banner o portada lista para Instagram, Twitch, etc.",
-            precio = 20000,
-            imagenRes = R.drawable.servicio3
-        ),
-        Servicio(
-            id = 4,
-            titulo = "Arte Conceptual",
-            descripcion = "Ilustración conceptual para proyectos o videojuegos.",
-            precio = 40000,
-            imagenRes = R.drawable.servicio4
-        ),
-        Servicio(
-            id = 5,
-            titulo = "Caricatura Personalizada",
-            descripcion = "Dibujo divertido con estilo caricaturesco.",
-            precio = 22000,
-            imagenRes = R.drawable.servicio5
-        )
-    )
+    // Obtener lista de servicios desde backend
+    suspend fun obtenerServiciosBackend(): List<Servicio> {
+        return try {
+            api.listarServicios()
+        } catch (e: HttpException) {
+            emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 
-    fun obtenerServicios(): List<Servicio> = servicios
+    // Obtener un servicio por ID desde backend
+    suspend fun obtenerServicioPorIdBackend(id: Long): Servicio {
+        return try {
+            api.obtenerServicioPorId(id)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    // **Editar servicio en backend**
+    suspend fun actualizarServicioBackend(servicio: Servicio): Servicio {
+        val servicioId = servicio.id
+            ?: throw IllegalArgumentException("El servicio no tiene ID asignado")
+        return try {
+            api.editarServicio(servicioId, servicio)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    // Crear un nuevo servicio
+    suspend fun crearServicioBackend(servicio: Servicio): Servicio {
+        return try {
+            api.crearServicio(servicio)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    // Activar/desactivar servicios
+    suspend fun activarServicioBackend(id: Long): Servicio {
+        return try {
+            api.activarServicio(id)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun desactivarServicioBackend(id: Long): Servicio {
+        return try {
+            api.desactivarServicio(id)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    // NUEVA FUNCIÓN: Eliminar un servicio por ID REAL
+    suspend fun eliminarServicioBackend(id: Long) {
+        return try {
+            api.eliminarServicio(id)
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+    // Fin de la nueva función
 }
